@@ -1,0 +1,297 @@
+	<div class="col-xs-12">
+		<div class="page-header page-nopad">
+			<div class="pull-right"><?php echo $container->status == "running" ? '<i class="fa fa-check-circle fa-2x fa-green"></i>' : '<i class="fa fa-times-circle fa-2x fa-red"></i>' ?></div>
+			
+			<h2>Manage VPS <small><?php echo $container->hostname; ?></small></h2>
+		</div>
+		
+		<?php if ($container->suspended == 1) {$this->load->view('error', array('type' => 'error', 'message' => 'Your VPS is currently suspended.  Please contact support for more information.'));} foreach ($alerts as $alert) {$this->load->view('useralert', $alert);} ?>
+	</div>
+</div>
+
+<!-- KVM -->
+
+<div class="row">
+	<div class="col-sm-6">
+        <div class="panel panel-default">
+			<div class="panel-heading">Status</div>
+			<div class="panel-body">
+				<?php
+					if ($container->load_average > $container->load_critical) {$load1style = 'label label-danger';
+					} elseif ($container->load_average > $container->load_warning) {$load1style = 'label label-warning';
+					} else {$load1style = 'label label-success';}
+					
+					if ($container->load_average_5 > $container->load_critical) {$load5style = 'label label-danger';
+					} elseif ($container->load_average5 > $container->load_warning) {$load5style = 'label label-warning';
+					} else {$load5style = 'label label-success';}
+					
+					if ($container->load_average_15 > $container->load_critical) {$load15style = 'label label-danger';
+					} elseif ($container->load_average_15 > $container->load_warning) {$load15style = 'label label-warning';
+					} else {$load15style = 'label label-success';}
+				?>
+
+				<table class="table table-unstyled table-fixed">
+					<tr><th>Status</th><td><span class="status-<?php echo $container->status; ?>"><?php echo ucfirst($container->status); ?></span></td></tr>
+
+					<tr>
+							<th>Load</th>
+							<td><span class="<?php echo $load1style; ?>"><?php echo $container->load_average; ?></span> <span class="<?php echo $load5style; ?>"><?php echo $container->load_average_5; ?></span> <span class="<?php echo $load15style; ?>"><?php echo $container->load_average_15; ?></span></td>
+					</tr>
+
+					<tr>
+							<th>Memory</th>
+							<td>
+									<div class="progress">
+											<span><?php echo $container->memory_used; ?> MB / <?php echo $container->memory_burst; ?> MB</span>
+											<div class="progress-bar" role="progressbar" aria-valuenow="<?php echo $container->memory_used; ?>" aria-valuemin="0" aria-valuemax="<?php echo $container->memory_burst; ?>" style="width: <?php echo max((($container->memory_used / $container->memory_burst) * 100), 1); ?>%"></div>
+									</div>
+							</td>
+					</tr>
+
+					<tr>
+							<th>Disk</th>
+							<td>
+									<div class="progress">
+											<span><?php echo byte_format($container->disk_used * 1024 * 1024).' / '.$container->disk_size; ?> GB</span>
+											<div class="progress-bar" role="progressbar" aria-valuenow="<?php echo ($container->disk_used * 1024 * 1024); ?>" aria-valuemin="0" aria-valuemax="<?php echo $container->disk_size; ?>" style="width:<?php echo max((($container->disk_used/1024 / $container->disk_size) * 100), 1); ?>%"></div>
+									</div>
+							</td>
+					</tr>
+					
+					<tr>
+							<th>Bandwidth</th>
+							<td>
+									<div class="progress">
+											<span><?php echo byte_format($container->bandwidth_total).' / '.$container->bandwidth_allowed ;?> GB</span>
+											<div class="progress-bar" role="progressbar" aria-valuenow="<?php echo $container->bandwidth_total; ?>" aria-valuemin="0" aria-valuemax="<?php echo ($container->bandwidth_allowed*1024*1024*1024); ?>" style="width: <?php echo min(100, max((($container->bandwidth_total / ($container->bandwidth_allowed*1024*1024*1024)) * 100), 1)); ?>%"></div>
+									</div>
+							</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Server Details</div>
+			<div class="panel-body">
+					<table class="table table-condensed table-unstyled table-fixed">
+					<?php
+					echo '<tr><th>IP Address</th><td>'.long2ip($container->ip_address).'</td></tr>
+							<tr><th>Node</th><td> <a href="/node/'.$node->id.'">'.$node->node_name.'</a></td></tr>
+							<tr><th>Location</th><td>'.$node->location_name.'</td></tr>';
+
+					if ($this->ion_auth->is_admin() === TRUE) {
+							echo '<tr><th>Owner</th><td><a href="/profile/edit/'.$owner->id.'"> '.$owner->first_name.' '.$owner->last_name.'</a> (<a href="mailto:'.$owner->email.'">'.$owner->email.'</a>)</td></tr>';
+							echo '<tr><th>ctid</th><td>'.$container->ctid.'</td></tr>';
+							echo '<tr><th>vserverid</th><td>'.$container->vserverid.'</td></tr>';
+					}
+					echo '</table>';
+					?>
+			</div>
+		</div>
+	</div>
+	
+</div>
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Power Options</div>
+			<div class="panel-body">
+				<ul id="power-options" class="list-inline">
+						<li class="button col-xs-3"><a href="#" data-toggle="modal" data-target="#reboot"><span><i class="fa fa-refresh fa-2x"></i><br />Reboot</span></a></li>
+						<li class="button col-xs-3"><a href="#" data-toggle="modal" data-target="#shutdown"><span><i class="fa fa-power-off fa-2x"></i><br />Shut Down</span></a></li>
+						<li class="button col-xs-3"><a href="#" data-toggle="modal" data-target="#boot"><span><i class="fa fa-play-circle fa-2x"></i><br />Boot</span></a></li>
+						<li class="button col-xs-3"><a href="#" data-toggle="modal" data-target="#poweroff"><span><i class="fa fa-plug fa-2x"></i><br />Power Off</span></a></li>
+				</ul>
+					
+				<div class="modal fade" id="reboot" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="rebootLabel">Reboot</h4>
+							</div>
+							<div class="modal-body">
+								<p>Are you sure you want to reboot this server?</p>
+							</div>
+							<div class="modal-footer">
+								<?php echo form_open('server/reboot/'.$container->ctid); ?>
+								<input class="btn btn-danger" name="reboot" value="Reboot" type="submit" />
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								<?php echo form_close(); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+					
+				<div class="modal fade" id="shutdown" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="shutdownLabel">Shutdown</h4>
+							</div>
+							<div class="modal-body">
+								<p>Are you sure you want to shut down this server?</p>
+							</div>
+							<div class="modal-footer">
+								<?php echo form_open('server/shutdown/'.$container->ctid); ?>
+								<input class="btn btn-danger" name="shutdown" value="Shutdown" type="submit" />
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								<?php echo form_close(); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+					
+				<div class="modal fade" id="boot" tabindex="-1">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="bootLabel">Boot</h4>
+							</div>
+							<div class="modal-body">
+								<p>Are you sure you want to boot this server?</p>
+							</div>
+							<div class="modal-footer">
+								<?php echo form_open('server/boot/'.$container->ctid); ?>
+								<input class="btn btn-danger" name="boot" value="Boot" type="submit" />
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								<?php echo form_close(); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+					
+				<div class="modal fade" id="poweroff" tabindex="-1" role="dialog" aria-labelledby="poweroffLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" id="bootLabel">Power Off</h4>
+							</div>
+							<div class="modal-body">
+								<div class="alert alert-danger"><b>Warning!</b> This is the equivalent of unplugging the power cord on a physical server.  Improper shutdowns can cause data loss!</div>
+								<p>Are you sure you want to power off this server?</p>
+							</div>
+							<div class="modal-footer">
+								<?php echo form_open('server/poweroff/'.$container->ctid); ?>
+								<input class="btn btn-danger" name="poweroff" value="Power Off" type="submit" />
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								<?php echo form_close(); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+					
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">System Options</div>
+			<div class="panel-body">
+				<ul id="system-options" class="list-inline">
+					<?php echo '
+						<li class="button col-xs-3"><a href="/server/reinstall/'.$container->ctid.'"><span><i class="fa fa-download fa-2x"></i><br />Reinstall</span></a></li>
+						
+						<li class="button col-xs-3"><a href="/server/ipaddresses/'.$container->ctid.'"><span><i class="fa fa-globe fa-2x"></i><br />IP Addresses</span></a></li>
+						
+						<li class="button col-xs-3"><a href="/server/monitoring/'.$container->ctid.'" data-toggle="modal" data-target="#monitoring-modal"><span><i class="fa fa-heartbeat fa-2x"></i><br />Monitoring</a><div id="monitoring-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div></li>
+						
+						<li class="button col-xs-3"><a href="/server/logs/'.$container->ctid.'"><span><i class="fa fa-file-text-o fa-2x"></i><br />Logs</span></a></li>';
+						?>
+				</ul>
+				
+			</div>
+		</div>
+	</div>
+	
+</div>
+
+<?php if ($this->ion_auth->is_admin()): ?>
+
+<div class="row">
+	<div class="col-xs-12">
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">Admin Options</div>
+			<div class="panel-body">
+				
+				<div class="row">
+					<div class="col-xs-12 col-sm-6">
+						<ul id="admin-options" class="list-inline"> 
+						
+						<?php if ($container->suspended == 1): ?>
+							<li class="button col-xs-3"><a href="/server/unsuspend/<?php echo $container->ctid; ?>" data-toggle="modal" data-target="#unsuspend-modal"><span><i class="fa fa-play fa-2x"></i><br />Unsuspend</a></li>
+						<?php else: ?>
+							<li class="button col-xs-3"><a href="/server/suspend/<?php echo $container->ctid; ?>" data-toggle="modal" data-target="#suspend-modal"><span><i class="fa fa-pause fa-2x"></i><br />Suspend</a></li>
+						<?php endif; ?>
+						
+							<li class="button col-xs-3"><a data-toggle="modal" data-target="#edit-modal" href="/server/edit/<?php echo $container->ctid; ?>"><span><i class="fa fa-wrench fa-2x"></i><br />Edit</span></a></li>
+					
+							<li class="button col-xs-3"><a href="/server/change_owner/<?php echo $container->ctid; ?>" data-toggle="modal" data-target="#owner-modal"><span><i class="fa fa-user fa-2x"></i><br />Change Owner</a></li>
+							
+							<li class="button col-xs-3"><a href="#" data-toggle="modal" data-target="#info-modal"><span><i class="fa fa-paper-plane-o fa-2x"></i><br />Resend VM Info</a></li>
+							
+						</ul>
+					</div>
+					<div class="col-xs-12 col-sm-6">
+						<ul id="admin-options" class="list-inline"> 
+					
+							<li class="button col-xs-3"><a data-toggle="modal" data-target="#xml-modal" href="/libkvm/editxml/<?php echo $container->ctid; ?>"><span><i class="fa fa-pencil fa-2x"></i><br />Edit XML</span></a></li>
+
+							<li class="button col-xs-3"><a href="/server/migrate/<?php echo $container->ctid; ?>" data-toggle="modal" data-target="#migrate-modal"><span><i class="fa fa-road fa-2x"></i><br />Migrate</a></li>
+                                                        
+                                                        <li class="button col-xs-3"><a href="#" data-toggle="modal" data-target="#resetbw-modal"><span><i class="fa fa-refresh fa-2x"></i><br />Reset Bandwidth</a></li>
+                                                        
+                                                        <li class="button col-xs-3"><a href="#" data-toggle="modal" data-target="#mac-modal"><span><i class="fa fa-map-marker fa-2x"></i><br />Set MAC Address</a></li>
+							
+							<li class="button col-xs-3"><a href="/server/destroy/<?php echo $container->ctid; ?>" data-toggle="modal" data-target="#destroy-modal"><span><i class="fa fa-trash fa-2x"></i><br />Destroy</a></li>
+						</ul>
+					</div>
+				</div>
+				
+				<!-- ADMIN MODALS -->
+				<div id="unsuspend-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div>
+				<div id="suspend-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div>
+				<div id="destroy-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div>
+				<div id="owner-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div>
+				<div id="edit-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div>
+				<div id="xml-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div>
+				<div id="migrate-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true"></div>
+				
+				<div id="info-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+						<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title">Resend VM Info</h4></div>
+							<div class="modal-body"><p>Are you sure you want to resend the VM info email to the VM owner?</p></div>
+							<div class="modal-footer">
+								<a href="/server/resend_info/<?php echo $container->ctid; ?>" class="btn btn-primary">Resend Info</a> 
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+							</div></div></div>
+				</div>
+                                
+				<div id="resetbw-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+					<div class="modal-dialog">
+                                                <div class="modal-content">
+                                                        <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                                <h4 class="modal-title">Reset Bandwidth</h4>
+                                                        </div>
+                                                        <div class="modal-body"><p>You are about to reset the bandwidth for this VM.  Are you sure you want to proceed?</p></div>
+                                                        <div class="modal-footer">
+								<a href="/server/resetbw/<?php echo $container->ctid; ?>" class="btn btn-primary">Reset Bandwidth</a> 
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                </div>
+                                        </div>
+				</div>
+                                
+				<div id="mac-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+					<div class="modal-dialog">
+                                                <div class="modal-content">
+                                                        <?php echo form_open('server/set_mac/'.$container->ctid); ?>
+                                                        <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                               

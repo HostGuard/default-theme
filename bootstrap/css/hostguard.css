@@ -1,0 +1,228 @@
+/******
+
+- Global
+- Navigation
+- Sidebar
+- Frame
+- Panels
+
+- Console Styling
+- Footer
+
+******/
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {padding-top: 50px; overflow-x:hidden;}
+
+.fa {color: #333;}
+.btn .fa {color: inherit;}
+.fa-green {color: #5cb85c;}
+.fa-red {color: #d9534f;}
+.fa-sky {color: #5bc0de;}
+.fa-white {color: #fff;}
+
+.btn-center{margin: 0 auto; display: block;}
+
+.table-fixed {table-layout: fixed;}
+
+.page-nopad{margin-top: -10px;}
+
+.navbar-header { margin-left: 7px; margin-right: 7px; }
+.navbar-header .fa {color: #ABABAB;}
+.navbar-right { padding-right: 15px; }
+.navbar-inverse { border-bottom: none; }
+.navbar-brand { padding: 12px; }
+
+/* LOGIN */
+
+.login {padding-top: 0px;}
+.login img {margin: 20px auto;}
+
+.login .box {max-width: 330px; padding: 15px; margin: 0 auto;}
+
+.login .login-heading, .login .checkbox {margin-bottom: 10px;}
+.login .checkbox {font-weight: normal;}
+
+.login .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;}
+
+
+/* SIDEBAR */
+
+#container-fluid {padding-bottom: 40px;}
+
+#sidebar {display: none;}
+
+@media (min-width: 768px) {
+  #sidebar {position: fixed;
+    top: 50px; bottom: 0; left: 0;
+    z-index: 1000; display: block;
+    padding: 10px 0 0 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #222;
+  }
+}
+
+#sidebar .list-group {margin: 0;}
+#sidebar .list-group-item {background: inherit; border: 0; padding-left: 25px; border-radius: 0; color: #999; }
+#sidebar .list-group-item:hover { background: #eee; color: #619924 }
+
+#sidebar .list-group-item.active { background: #7dc52e; background-image: linear-gradient(to bottom, #7DC52E 0px, #619924 100%) !important; color: #FFFFFF }
+
+.side-search{margin: 0 10px;}
+
+#sidebar::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);background: #F5F5F5;}
+#sidebar::-webkit-scrollbar {width: 12px;background: #F5F5F5;}
+#sidebar::-webkit-scrollbar-thumb {border-radius: 10px;-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);background: #555;}
+
+/* FRAME */
+
+#admin-main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  #admin-main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+
+/* PANELS */
+
+.panel-body li.button > a { display: block; margin: 0; min-width: 100px; text-align: center; color: black; text-decoration: none; }
+.panel-body li.button > a > span { padding-top: 10px; display: block; line-height: 30px }
+
+.panel-scroll{height:270px; overflow-y: auto;}
+
+@media (max-width: 768px) {
+	.panel-scroll{max-height:270px;}
+}
+.panel-body.no-pad {
+    padding: 0px;
+}
+
+/* TABS */
+
+.tab-content{
+	border: 1px solid #ddd;
+	border-top: 0;
+}
+
+.tab-pane {padding: 10px; padding-top: 20px;}
+
+/* VM Buttons */
+
+.list-inline .button a{
+	min-width: 75px;
+}
+
+/* TABLES */
+
+.no-pad .table-striped {border-bottom: 1px solid #ddd;}
+.table-unstyled, .table-unstyled th, .table-unstyled td {border: 0 !important;}
+
+.button a:hover {
+	background: #eee;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;}
+
+.settings-expanded dd {margin-bottom: 10px;}
+
+.text-muted { color: #777777;}
+
+.badge-default { background-color: #999999; }
+.badge-primary { background-color: #428BCA; }
+.badge-success { background-color: #5CB85C; }
+.badge-info { background-color: #5BC0DE; }
+.badge-warning { background-color: #F0AD4E; }
+.badge-danger { background-color: #D9534F; }
+
+
+.progress { position: relative; margin-bottom: 0px }
+.progress-bar { float: none }
+.progress span {
+    position: absolute;
+    top: 1px;
+    z-index: 2;
+    color: #000;
+    text-align: center;
+    width: 100%;
+    font-size: .9em;
+}
+
+.nav > li > a:hover, #sidebar .nav > li > a:focus {
+    background-color: #7DC52E;
+    background-image: linear-gradient(to bottom, #7DC52E 0px, #619924 100%) !important;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+a { color: #7DC52E }
+
+.table td, .table th { vertical-align: middle !important }
+
+.table-fixed-header { margin-bottom: 0px; border-bottom: 1px solid #DDDDDD }
+
+/* Widths for tables on node/status */
+#virtual-machines-header th:first-child, #virtual-machines-body td:first-child { width: 60px; }
+#virtual-machines-header th:nth-child(2), #virtual-machines-body td:nth-child(2) { width: 175px; }
+
+#node-alerts-header th:first-child, #node-alerts-body td:first-child { width: 150px; }
+#node-alerts-header th:nth-child(2), #node-alerts-body td:nth-child(2) { width: 200px; }
+#node-alerts-header th:nth-child(3), #node-alerts-body td:nth-child(3) { width: 200px; }
+#node-alerts-header th:nth-child(4), #node-alerts-body td:nth-child(4) { width: 100px; }
+
+#server-alerts-header th:first-child, #server-alerts-body td:first-child { width: 150px; }
+#server-alerts-header th:nth-child(2), #server-alerts-body td:nth-child(2) { width: 200px; }
+#server-alerts-header th:nth-child(3), #server-alerts-body td:nth-child(3) { width: 200px; }
+#server-alerts-header th:nth-child(4), #server-alerts-body td:nth-child(4) { width: 100px; }
+#processes { table-layout: fixed; width: 100%; }
+
+#processes th:nth-child(4), #processes td:nth-child(4) { text-align: right; }
+#processes th:nth-child(5), #processes td:nth-child(5) { text-align: right; }
+#processes th:nth-child(6), #processes td:nth-child(6) { text-align: right; }
+
+#logs-header th:first-child, #logs-body td:first-child { width: 120px; }
+#logs-header th:nth-child(2), #logs-body td:nth-child(2) { width: 50px; }
+#logs-header th:nth-child(3), #logs-body td:nth-child(3) { width: 50px; }
+
+.form-horizontal label.control-label.col-md-3 { max-width: 175px; }
+
+form p { margin-bottom: 30px }
+
+#term pre, #term div { border: none !important; border-radius: 0 !important }
+
+.modal-footer a.btn { color: #FFFFFF; display: inline-block }
+
+/* CONSOLE STYLING */
+
+.novnc {background: #000; margin: 0; padding-top: 60px;}
+.novnc .navbar-header {padding: 9px;}
+.novnc #noVNC_status {margin-top: 6px; display: block;}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  color: #666;
+  background-color: #222222;
+}
+
+#footer #credit {
+    font-weight: bold;
+    margin-bottom: 0;
+    padding: 10px;
+}

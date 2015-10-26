@@ -1,0 +1,1 @@
+<?php $this->load->view('error', array('type' => 'error', 'message' => 'You do not have access to this object.')); ?>
